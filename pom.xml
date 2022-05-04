@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>databricks-azure-custom-sas-token</groupId>
+    <artifactId>databricks-azure-custom-sas-token</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <properties>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <hadoop.version>3.3.0</hadoop.version>
+        <guava.version>27.0-jre</guava.version>
+        <guice.version>4.0</guice.version>
+        <joda-time.version>2.9.9</joda-time.version>
+        <jersey.version>1.19</jersey.version>
+        <maven-compiler-plugin.version>3.1</maven-compiler-plugin.version>
+
+
+        <!-- jackson versions -->
+        <jackson.version>1.9.13</jackson.version>
+        <jackson2.version>2.10.3</jackson2.version>
+        <jackson2.databind.version>2.10.3</jackson2.databind.version>
+
+        <openssl-wildfly.version>1.0.7.Final</openssl-wildfly.version>
+        <jetty.version>9.4.20.v20190813</jetty.version>
+
+        <!-- httpcomponents versions -->
+        <httpclient.version>4.5.6</httpclient.version>
+        <httpcore.version>4.4.10</httpcore.version>
+        <bouncycastle.version>1.60</bouncycastle.version>
+    </properties>
+
+        <build>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>${maven-compiler-plugin.version}</version>
+
+                    <configuration>
+                        <source>1.7</source>
+                        <target>1.7</target>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>3.1.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-shade-plugin</artifactId>
+                    <version>3.2.4</version>
+                    <executions>
+                        <execution>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>shade</goal>
+                            </goals>
+                            <configuration>
+                                <filters>
+                                    <filter>
+                                        <artifact>*:*</artifact>
+                                        <excludes>
+                                            <exclude>META-INF/*.SF</exclude>
+                                            <exclude>META-INF/*.DSA</exclude>
+                                            <exclude>META-INF/*.RSA</exclude>
+                                        </excludes>
+                                    </filter>
+                                    <!--<filter>
+                                        <artifact>org.apache.hadoop:hadoop-common</artifact>
+                                        <includes>
+                                            <include>org/apache/hadoop/security/ssl/DelegatingSSLSocketFactory*</include>
+                                            <include>org/apache/hadoop/security/ProviderUtils*</include>
+                                        </includes>
+
+                                    </filter> -->
+                                </filters>
+                                <relocations>
+                                    <relocation>
+                                        <pattern>org.apache.hadoop.security</pattern>
+                                        <shadedPattern>shaded.databricks.azurebfs.org.apache.hadoop.security</shadedPattern>
+                                        <includes>
+                                            <include>org.apache.hadoop.security.ssl.DelegatingSSLSocketFactory*</include>
+                                            <include>org.apache.hadoop.security.ProviderUtils*</include>
+                                            <include>org.apache.hadoop.security.token.DtFetcher*</include>
+                                        </includes>
+                                    </relocation>
+
+                                    <relocation>
+                                        <pattern>org.apache.hadoop.fs.azurebfs</pattern>
+                                        <shadedPattern>shaded.databricks.sastoken.org.apache.hadoop.fs.azurebfs</shadedPattern>
+                                        <excludes>
+                                            <exclude>org.apache.hadoop.fs.azurebfs.extensions.*</exclude>
+                                        </excludes>
+                                    </relocation>
+                                </relocations>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </build>
+
+            <dependencies>
+                <dependency>
+                    <groupId>org.apache.hadoop</groupId>
+                    <artifactId>hadoop-common</artifactId>
+                    <version>${hadoop.version}</version>
+                  <scope>provided</scope>
+
+                </dependency>
+
+                <dependency>
+                    <groupId>org.apache.hadoop</groupId>
+                    <artifactId>hadoop-azure</artifactId>
+                    <version>${hadoop.version}</version>
+                    <!-- <scope>provided</scope> -->
+                </dependency>
+
+                <dependency>
+                    <groupId>org.apache.httpcomponents</groupId>
+                    <artifactId>httpclient</artifactId>
+                    <version>${httpclient.version}</version>
+
+                    <scope>provided</scope>
+                </dependency>
+
+
+                <dependency>
+                    <groupId>com.google.guava</groupId>
+                    <artifactId>guava</artifactId>
+                    <version>${guava.version}</version>
+                    <scope>provided</scope>
+
+                </dependency>
+
+                <dependency>
+                    <groupId>org.eclipse.jetty</groupId>
+                    <artifactId>jetty-util-ajax</artifactId>
+                    <version>${jetty.version}</version>
+
+                    <scope>provided</scope>
+                </dependency>
+
+                <dependency>
+                    <groupId>org.codehaus.jackson</groupId>
+                    <artifactId>jackson-mapper-asl</artifactId>
+                    <version>${jackson.version}</version>
+
+                    <scope>provided</scope>
+                </dependency>
+
+                <dependency>
+                    <groupId>org.codehaus.jackson</groupId>
+                    <artifactId>jackson-core-asl</artifactId>
+                    <version>${jackson.version}</version>
+
+                    <scope>provided</scope>
+                </dependency>
+
+                <dependency>
+                    <groupId>org.wildfly.openssl</groupId>
+                    <artifactId>wildfly-openssl</artifactId>
+                    <version>${openssl-wildfly.version}</version>
+
+                    <scope>provided</scope>
+                </dependency>
+
+                <!--com.fasterxml.jackson is used by WASB, not ABFS-->
+                <!--transitive dependency from Azure SDK-->
+                <dependency>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                    <artifactId>jackson-core</artifactId>
+                    <version>${jackson2.version}</version>
+
+                    <scope>provided</scope>
+                </dependency>
+
+                <!--transitive dependency from hadoop-common-->
+                <dependency>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                    <artifactId>jackson-databind</artifactId>
+                    <version>${jackson2.databind.version}</version>
+
+                    <scope>provided</scope>
+                </dependency>
+
+
+            </dependencies>
+
+</project>
